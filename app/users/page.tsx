@@ -1,5 +1,6 @@
 import React from 'react'
 import AddToCart from '../Components/AddToCart'
+import Link from 'next/link'
 
 interface User {
   id: number
@@ -29,7 +30,11 @@ const page = async () => {
         <tbody>
           {data.map((user: any) => (
             <tr key={user.id}>
-              <td>{user.name}</td>
+              <td>
+                <Link href={`/users/${user.id}`}>
+                  {user.name}
+                </Link>
+                </td>
               <td>{user.email}</td>
             </tr>
           ))}

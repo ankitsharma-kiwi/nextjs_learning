@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useState } from 'react'
 import AddToCart from '../Components/AddToCart'
 import Link from 'next/link'
+import UserTable from './UserTable'
 
 interface User {
   id: number
@@ -8,38 +9,19 @@ interface User {
   email: string
 }
 
-const page = async () => {
-  const res = await fetch('https://jsonplaceholder.typicode.com/users', { cache: 'no-store' })
-  // Cache: no-store means it will provide the updated data from the api, not from the cache file system
-  // { next: { revalidate: 10 } } means it will revalidate the data after 10 seconds
+interface UserPageProps {
+  searchParams: { [key: string]: string | string[] | undefined }
+}
 
+const page = async ({ searchParams }: UserPageProps) => {
+  const res = await fetch('https://jsonplaceholder.typicode.com/users', { cache: 'no-store' })
   const data: User[] = await res.json()
 
-  console.log('data', data)
   return (
     <>
       <AddToCart />
       <h1>Users Table</h1>
-      <table className="table table-bordered ">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Email</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((user: any) => (
-            <tr key={user.id}>
-              <td>
-                <Link href={`/users/${user.id}`}>
-                  {user.name}
-                </Link>
-                </td>
-              <td>{user.email}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <UserTable data={data} searchParams={searchParams} />
     </>
   )
 }

@@ -10,8 +10,8 @@ interface UserPageProps {
 const page = async ({ searchParams }: UserPageProps) => {
   return (
     <>
-      <AddToCart />
       <h1>Users Table</h1>
+      <Link href={'/users/new'} className='btn'>New User</Link>
       <UserTable searchParams={searchParams} />
     </>
   )

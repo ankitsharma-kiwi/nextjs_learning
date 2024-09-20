@@ -1,14 +1,35 @@
+import prisma from "@/prisma/client";
 import { NextRequest, NextResponse } from 'next/server';
+import schema from "./schema";
 
-export function GET(request: NextRequest) {
-    return NextResponse.json([
-        { id: 1, name: 'John Doe' },
-        { id: 2, name: 'Jane Smith' },
-    ]);
+export async function GET(request: NextRequest) {
+    const users = await prisma.user.findMany()
+    console.log(users);
+    return NextResponse.json(users, {status: 200});
 }
 
 export async function POST(request: NextRequest) {
     const body = await request.json();
-    if(!body.name) return NextResponse.json({error: 'Name is required'}, {status: 400});
-    return NextResponse.json(body, {status: 201});
+    const validation = schema.safeParse(body);
+    if (!validation.success) {
+        return NextResponse.json(validation.error.errors, {status: 400})
+    }
+
+    const user = await prisma.user.findUnique({
+        where: {
+            email: body.email
+        }
+    })
+
+    if (user) {
+        return NextResponse.json({message: "user already exists"}, {status: 400})
+    }
+    
+    const newUser = await prisma.user.create({
+        data: {
+            name: body.name,
+            email: body.email
+        }
+    })
+    return NextResponse.json(newUser, {status: 201});
 }
